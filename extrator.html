@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extrator de Links Shopee</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="max-w-4xl w-full bg-white p-8 rounded-2xl shadow-xl">
+    <h1 class="text-3xl font-bold text-orange-600 mb-4">🔗 Extrator Inteligente de Links Shopee</h1>
+    <p class="text-sm text-gray-500 mb-6">Cole o texto abaixo. O sistema vai associar cada link <code>https://s.shopee.com.br/...</code> ao nome anterior com <code>></code>.</p>
+
+    <textarea id="inputText" rows="8" placeholder=">Nome do Produto\nhttps://s.shopee.com.br/abc123"
+      class="w-full p-4 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-400 resize-none mb-4"></textarea>
+
+    <div class="flex flex-wrap gap-3 mb-6">
+      <button onclick="extrairDados()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-lg text-sm">Extrair</button>
+      <button onclick="copiarResultado()" id="copyBtn" class="hidden bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded-lg text-sm">Copiar Tudo</button>
+    </div>
+
+    <div id="resultado" class="hidden">
+      <h2 class="text-lg font-semibold mb-3">📋 Resultado <span id="contador"></span></h2>
+      <div id="output" class="bg-gray-50 p-4 border rounded-md text-sm max-h-96 overflow-y-auto whitespace-pre-wrap font-mono leading-relaxed"></div>
+    </div>
+  </div>
+
+  <script>
+    function extrairDados() {
+      const texto = document.getElementById("inputText").value;
+      const linhas = texto.split('\n');
+
+      let ultimoNome = '';
+      let resultado = [];
+      const regexLink = /https:\/\/s\.shopee\.com\.br\/[\w\d\-_.?=&#%]+/g;
+
+      for (let linha of linhas) {
+        linha = linha.trim();
+        if (linha.startsWith('>')) {
+          ultimoNome = linha;
+        }
+        const linkEncontrado = linha.match(regexLink);
+        if (linkEncontrado) {
+          linkEncontrado.forEach(link => {
+            resultado.push(`<strong class='text-orange-700'>${ultimoNome || '>Sem nome'}</strong><br><a href="${link}" class="text-blue-600 underline" target="_blank">${link}</a><br><br>`);
+          });
+        }
+      }
+
+      const outputDiv = document.getElementById("output");
+      const contador = document.getElementById("contador");
+      const copyBtn = document.getElementById("copyBtn");
+      const resultadoDiv = document.getElementById("resultado");
+
+      if (resultado.length > 0) {
+        outputDiv.innerHTML = resultado.join('');
+        contador.textContent = `(${resultado.length} itens)`;
+        copyBtn.classList.remove("hidden");
+        resultadoDiv.classList.remove("hidden");
+      } else {
+        outputDiv.innerHTML = "<em class='text-gray-500'>Nenhum link encontrado.</em>";
+        contador.textContent = "";
+        copyBtn.classList.add("hidden");
+        resultadoDiv.classList.remove("hidden");
+      }
+    }
+
+    function copiarResultado() {
+      const textoPuro = document.getElementById("output").innerText;
+      navigator.clipboard.writeText(textoPuro).then(() => {
+        const btn = document.getElementById("copyBtn");
+        btn.textContent = "✅ Copiado!";
+        setTimeout(() => btn.textContent = "Copiar Tudo", 1500);
+      });
+    }
+  </script>
+</body>
+</html>
