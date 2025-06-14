@@ -9,7 +9,13 @@
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
   <div class="max-w-4xl w-full bg-white p-8 rounded-2xl shadow-xl">
     <h1 class="text-3xl font-bold text-orange-600 mb-4">🔗 Extrator Inteligente de Links Shopee</h1>
-    <p class="text-sm text-gray-500 mb-6">Cole o texto abaixo. O sistema vai associar cada link <code>https://s.shopee.com.br/...</code> ao nome anterior com <code>></code>.</p>
+    <p class="text-sm text-gray-500 mb-4">Cole o texto abaixo. O sistema vai associar cada link <code>https://s.shopee.com.br/...</code> ao nome anterior com <code>></code>.</p>
+
+    <label for="modoExibicao" class="block mb-2 font-medium text-gray-700">Modo de exibição:</label>
+    <select id="modoExibicao" class="mb-4 p-2 border border-gray-300 rounded-md text-sm w-full max-w-xs">
+      <option value="nomeLink" selected>📝 Nome + Link</option>
+      <option value="somenteLinks">🔗 Somente links</option>
+    </select>
 
     <textarea id="inputText" rows="8" placeholder=">Nome do Produto\nhttps://s.shopee.com.br/abc123"
       class="w-full p-4 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-400 resize-none mb-4"></textarea>
@@ -28,6 +34,7 @@
   <script>
     function extrairDados() {
       const texto = document.getElementById("inputText").value;
+      const modo = document.getElementById("modoExibicao").value;
       const linhas = texto.split('\n');
 
       let ultimoNome = '';
@@ -42,7 +49,11 @@
         const linkEncontrado = linha.match(regexLink);
         if (linkEncontrado) {
           linkEncontrado.forEach(link => {
-            resultado.push(`<strong class='text-orange-700'>${ultimoNome || '>Sem nome'}</strong><br><a href="${link}" class="text-blue-600 underline" target="_blank">${link}</a><br><br>`);
+            if (modo === 'nomeLink') {
+              resultado.push(`<strong class='text-orange-700'>${ultimoNome || '>Sem nome'}</strong><br><a href="${link}" class="text-blue-600 underline" target="_blank">${link}</a><br><br>`);
+            } else {
+              resultado.push(`<a href="${link}" class="text-blue-600 underline" target="_blank">${link}</a><br>`);
+            }
           });
         }
       }
